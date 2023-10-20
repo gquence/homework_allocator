@@ -15,6 +15,10 @@ private:
     size_t _capacity = 0;
 public:
     my_vector(/* args */) {};
+    my_vector(my_vector<T, _alloc> &) = delete;
+    my_vector(my_vector<T, _alloc> &&) = delete;
+    my_vector<T, _alloc> & operator=(my_vector<T, _alloc> &) = delete;
+    my_vector<T, _alloc> & operator=(my_vector<T, _alloc> &&) = delete;
     ~my_vector()
     {
         if (_data)
@@ -28,7 +32,11 @@ public:
         if (_size == _capacity) {
             _capacity *= 2;
             T * tmp_data = _Allocator.allocate(_capacity);
-            memcpy(tmp_data, _data, sizeof(T) * _size);
+            for (size_t i = 0; i < _size; i++ ){
+                tmp_data[i] = _data[i];
+            }
+            _Allocator.deallocate(_data, _capacity);
+            _data = tmp_data;
         }
         _data[_size] = elem;
         _size++;

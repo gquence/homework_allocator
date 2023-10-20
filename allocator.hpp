@@ -16,13 +16,19 @@ private:
 
 public:
     my_allocator() noexcept {};
-    template<class U>
-    my_allocator(const my_allocator<U> &rhv) noexcept {
+    my_allocator(my_allocator<T> &rhv) noexcept {
         m_memoryPool = rhv.m_memoryPool;
         rhv.m_memoryPool = nullptr;
         m_allocated_to_user = rhv.m_allocated_to_user;
         rhv.m_allocated_to_user = 0;
     }
+    my_allocator(my_allocator<T> &&rhv) noexcept {
+        m_memoryPool = rhv.m_memoryPool;
+        rhv.m_memoryPool = nullptr;
+        m_allocated_to_user = rhv.m_allocated_to_user;
+        rhv.m_allocated_to_user = 0;
+    }
+
     value_type *allocate(std::size_t n) {
         if (m_memoryPool == nullptr) {
             m_memoryPool = static_cast<value_type *>(::operator new(C * sizeof(value_type)));
